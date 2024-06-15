@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stopwatch</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0; /* Light gray background */
+    padding-top: 20px;
+  }
+
+  #stopwatch {
+    font-size: 72px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+  }
+
+  #lapTimes {
+    margin-bottom: 20px;
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  #lapTimes p {
+    font-size: 18px;
+    margin: 5px;
+  }
+
+  button {
+    font-size: 18px;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #45a049;
+  }
+
+  .controls {
+    margin-top: 20px;
+  }
+
+  .info {
+    margin-top: 30px;
+    font-size: 16px;
+    text-align: left;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .info h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+<div id="stopwatch">00:00:00</div>
+<div class="controls">
+  <button onclick="startStop()">Start / Stop</button>
+  <button onclick="recordLap()">Lap</button>
+  <button onclick="resetStopwatch()">Reset</button>
+</div>
+<div id="lapTimes"></div>
+
+<div class="info">
+  <h2>About Stopwatch</h2>
+  <p>This stopwatch application allows you to measure time with precision. Click "Start / Stop" to begin or pause the timer. You can record laps by clicking "Lap". The laps will appear below. To reset the stopwatch, click "Reset". Enjoy using this tool!</p>
+</div>
+
+<script>
+  let timer;
+  let isRunning = false;
+  let startTime;
+  let lapCount = 1;
+
+  function startStop() {
+    if (isRunning) {
+      clearInterval(timer);
+      isRunning = false;
+    } else {
+      startTime = Date.now() - (lapCount === 1 ? 0 : (lapCount - 1) * 1000);
+      timer = setInterval(updateStopwatch, 10); // Update every 10 milliseconds for smoother display
+      isRunning = true;
+    }
+  }
+
+  function updateStopwatch() {
+    const elapsedTime = Date.now() - startTime;
+    const formattedTime = formatTime(elapsedTime);
+    document.getElementById("stopwatch").innerText = formattedTime;
+  }
+
+  function formatTime(milliseconds) {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+    const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+    const millisecondsPart = (milliseconds % 1000).toString().padStart(3, "0").slice(0, 2);
+    return `${minutes}:${seconds}:${millisecondsPart}`;
+  }
+
+  function recordLap() {
+    if (isRunning) {
+      const lapTime = Date.now() - startTime;
+      const formattedLapTime = formatTime(lapTime);
+      const lapElement = document.createElement("p");
+      lapElement.innerText = `Lap ${lapCount++}: ${formattedLapTime}`;
+      document.getElementById("lapTimes").appendChild(lapElement);
+    }
+  }
+
+  function resetStopwatch() {
+    clearInterval(timer);
+    isRunning = false;
+    document.getElementById("stopwatch").innerText = "00:00:00";
+    document.getElementById("lapTimes").innerHTML = "";
+    lapCount = 1;
+  }
+</script>
+</body>
+</html>
